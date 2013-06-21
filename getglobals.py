@@ -7,6 +7,7 @@ from commands import getoutput
 from msmlib import remove_all_files
 from settings import MSM_GLOBALS, GLOBALS_FOLDER, LIB_PATH,\
 	LOG_TYPE, LOG_FILENAME, LOG_FORMAT, LOG_FILESIZE, LOG_FILECOUNT
+import sys
 import logging
 import logging.handlers
 
@@ -16,7 +17,7 @@ else:
 	logger = logging.getLogger(__name__)
 	logger.setLevel(logging.DEBUG)
 	form = logging.Formatter(LOG_FORMAT)
-	filehandler = logging.handlers.RotatingFileHandler(LOG_FILENAME, LOG_FILESIZE, LOG_FILECOUNT)
+	filehandler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=LOG_FILESIZE, backupCount=LOG_FILECOUNT)
 	filehandler.setFormatter(form)
 	strhandler = logging.StreamHandler(sys.stdout)
 	strhandler.setFormatter(form)

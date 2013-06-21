@@ -20,7 +20,7 @@ else:
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
     form = logging.Formatter(LOG_FORMAT)
-    filehandler = logging.handlers.RotatingFileHandler(LOG_FILENAME, LOG_FILESIZE, LOG_FILECOUNT)
+    filehandler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=LOG_FILESIZE, backupCount=LOG_FILECOUNT)
     filehandler.setFormatter(form)
     strhandler = logging.StreamHandler(sys.stdout)
     strhandler.setFormatter(form)
