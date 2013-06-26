@@ -17,11 +17,12 @@ DIFF_ARCHIVE_MAX_AGE=10
 ROOT_IP='192.168.20.251'
 ROOT_USERNAME='alex'
 ROOT_PASSWORD='pa55w0rd'
-ROOT_PATH='/home/alex/tmp/'
+ROOT_PATH='/home/alex/db/incoming/145000/'
 
-LOG_TYPE='FILE' # or 'SCREEN' or 'BOTH' or 'NONE'
-LOG_FILENAME='node-msm.log'
-LOG_FORMAT=u'[%(asctime)s] %(levelname)-8s  %(message)-65s #%(filename)s[LINE:%(lineno)d]'
+LOG_TYPE='both' # 'FILE' or 'SCREEN' or 'BOTH' or 'NONE'
+LOG_FILENAME='/home/admmsm/node-msm1/node-msm.log'
+#LOG_FORMAT=u'[%(asctime)s] %(levelname)-8s  %(message)-85s #%(filename)s[LINE:%(lineno)d]'
+LOG_FORMAT=u'[%(asctime)s] %(levelname)-8s \t#%(filename)s[LINE:%(lineno)d]\n%(message)s '
 LOG_FILESIZE=1024000
 LOG_FILECOUNT=5
 

@@ -9,8 +9,9 @@ from settings import STATION_CODE as station, GLOBALS_FOLDER as gl_path,\
     DB_ARCHIVE_MAX_AGE as arch_age, DIFF_ARCHIVE_MAX_AGE as diff_age,\
     LOG_TYPE, LOG_FILENAME, LOG_FORMAT, LOG_FILESIZE, LOG_FILECOUNT
 from msmlib import get_complete_db, dump_db, dump_compressed_db,\
-    remove_all_files, remove_old_files, getdiff, compress,\
-    debug_message
+    remove_all_files, remove_old_files, remove_file, getdiff,\
+    compress, debug_message
+from os import path
 import logging
 import logging.handlers
 
@@ -20,25 +21,36 @@ else:
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
     form = logging.Formatter(LOG_FORMAT)
-    filehandler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=LOG_FILESIZE, backupCount=LOG_FILECOUNT)
+    filehandler = logging.handlers.RotatingFileHandler(
+	LOG_FILENAME, 
+	maxBytes=LOG_FILESIZE, 
+	backupCount=LOG_FILECOUNT)
     filehandler.setFormatter(form)
     strhandler = logging.StreamHandler(sys.stdout)
     strhandler.setFormatter(form)
     if LOG_TYPE.upper() == 'FILE':
         logger.addHandler(filehandler)
     elif LOG_TYPE.upper() == 'SCREEN':
-        logger.addHandler(strhandler)    
+        logger.addHandler(strhandler)
     else:
         logger.addHandler(filehandler)
-        logger.addHandler(strhandler)    
+        logger.addHandler(strhandler)
 
 if logger is not None: logger.info("CREATEDIFF BEGIN".center(50, '-'))
+if not path.isfile(db_path + '.ok'):
+    if logger is not None: logger.error("File %s not found. Database possibly corrupted." % (db_path + '.ok'))
+    if logger is not None: logger.info("CREATEDIFF END".center(50, '-'))
+    sys.exit(1)
 info = {}
 info["time"] = str(datetime.datetime.now().strftime('%y-%m-%d %H:%M:%S'))
 info["station"] = station
-data2 = get_complete_db(gl_path, source="file", info=info, logger=logger)
-
-data1 = get_complete_db(db_path, source="json", logger=logger)
+try:
+    data2 = get_complete_db(gl_path, source="file", info=info, logger=logger)
+    data1 = get_complete_db(db_path, source="json", logger=logger)    
+except Exception, e:
+    if logger is not None: logger.error("EXCEPTION: %s" % e)
+    if logger is not None: logger.info("CREATEDIFF END".center(50, '-'))
+    sys.exit(1)
 
 diff = getdiff(data2, data1)
 
@@ -52,7 +64,9 @@ compress(
     md5=True,
     logger=logger)
 
+remove_file(db_path + '.ok', logger=logger)
 dump_db(data2, db_path, logger=logger)
+open(db_path + '.ok', 'a').close()
 
 t = str(
     dt.strptime(diff["info"]["time"], '%y-%m-%d %H:%M:%S')

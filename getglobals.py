@@ -17,7 +17,10 @@ else:
 	logger = logging.getLogger(__name__)
 	logger.setLevel(logging.DEBUG)
 	form = logging.Formatter(LOG_FORMAT)
-	filehandler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=LOG_FILESIZE, backupCount=LOG_FILECOUNT)
+	filehandler = logging.handlers.RotatingFileHandler(
+		LOG_FILENAME, 
+		maxBytes=LOG_FILESIZE, 
+		backupCount=LOG_FILECOUNT)
 	filehandler.setFormatter(form)
 	strhandler = logging.StreamHandler(sys.stdout)
 	strhandler.setFormatter(form)
@@ -27,14 +30,18 @@ else:
 		logger.addHandler(strhandler)
 	else:
 		logger.addHandler(filehandler)
-		logger.addHandler(strhandler) 
-
+		logger.addHandler(strhandler)
 if logger is not None: logger.info("GETGOBALS BEGIN".center(50, '-'))
 remove_all_files(GLOBALS_FOLDER, logger=logger)
 for g in MSM_GLOBALS:
-	if logger is not None: logger.info("Retrieving global: %s" % (g))
-	result = getoutput('%sMSMCmd.pl "d ^GETGL(\\"%s\\")"' % (LIB_PATH, g))
-	with open(GLOBALS_FOLDER + g, "w") as text_file:
-		text_file.write(result)
+	if logger is not None: logger.info("GETGL: Retrieving global: %s" % (g))
+	try:
+		result = getoutput('%sMSMCmd.pl "d ^GETGL(\\"%s\\")"' % (LIB_PATH, g))
+		with open(GLOBALS_FOLDER + g, "w") as text_file:
+			text_file.write(result)
+	except Exception, e:
+		if logger is not None: logger.error("EXCEPTION: %s" % e)
+		if logger is not None: logger.info("GETGLOBALS END".center(50, '-'))
+		sys.exit(1)
 	if logger is not None: logger.info("Global %s saved to file: %s" % (g, GLOBALS_FOLDER + g))
 if logger is not None: logger.info("GETGOBALS END".center(50, '-'))

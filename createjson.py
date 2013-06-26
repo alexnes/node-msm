@@ -2,9 +2,10 @@
 # -*- coding utf-8 -*-
 import sys
 import datetime
-from msmlib import get_complete_db, dump_db
+from msmlib import get_complete_db, dump_compressed_db
 from settings import STATION_CODE as station,\
-    LOG_TYPE, LOG_FILENAME, LOG_FORMAT, LOG_FILESIZE, LOG_FILECOUNT
+    LOG_TYPE, LOG_FILENAME, LOG_FORMAT, LOG_FILESIZE, LOG_FILECOUNT,\
+    OUT_PATH
 import logging
 import logging.handlers
 
@@ -14,7 +15,10 @@ else:
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
     form = logging.Formatter(LOG_FORMAT)
-    filehandler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=LOG_FILESIZE, backupCount=LOG_FILECOUNT)
+    filehandler = logging.handlers.RotatingFileHandler(
+	LOG_FILENAME, 
+	maxBytes=LOG_FILESIZE, 
+	backupCount=LOG_FILECOUNT)
     filehandler.setFormatter(form)
     strhandler = logging.StreamHandler(sys.stdout)
     strhandler.setFormatter(form)
@@ -33,4 +37,8 @@ info = {}
 info["time"] = str(datetime.datetime.now().strftime('%y-%m-%d %H:%M:%S'))
 info["station"] = station
 data = get_complete_db(sys.argv[1], source="file", info = info, logger=logger)
-dump_db(data, sys.argv[2], logger=logger)
+dump_compressed_db(
+    data,
+    OUT_PATH + sys.argv[2] + '.tar.bz2',
+    sys.argv[2],
+    logger=logger)

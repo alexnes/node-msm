@@ -8,6 +8,7 @@ from settings import OUT_PATH as out_path,\
     ROOT_PATH as path,\
     LOG_TYPE, LOG_FILENAME, LOG_FORMAT, LOG_FILESIZE, LOG_FILECOUNT
 from msmlib import debug_message, send_file, remove_file
+import sys
 import logging
 import logging.handlers
 
@@ -17,7 +18,10 @@ else:
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
     form = logging.Formatter(LOG_FORMAT)
-    filehandler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=LOG_FILESIZE, backupCount=LOG_FILECOUNT)
+    filehandler = logging.handlers.RotatingFileHandler(
+	LOG_FILENAME,
+	maxBytes=LOG_FILESIZE, 
+	backupCount=LOG_FILECOUNT)
     filehandler.setFormatter(form)
     strhandler = logging.StreamHandler(sys.stdout)
     strhandler.setFormatter(form)
