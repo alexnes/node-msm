@@ -4,8 +4,7 @@ import sys
 import datetime
 from msmlib import get_complete_db, dump_compressed_db
 from settings import STATION_CODE as station,\
-    LOG_TYPE, LOG_FILENAME, LOG_FORMAT, LOG_FILESIZE, LOG_FILECOUNT,\
-    OUT_PATH
+    LOG_TYPE, LOG_FILENAME, LOG_FORMAT, LOG_FILESIZE, LOG_FILECOUNT
 import logging
 import logging.handlers
 
@@ -31,14 +30,16 @@ else:
         logger.addHandler(strhandler) 
 
 if len(sys.argv) != 3:
-    print "Usage:\n\t%s globals_folder result_file.json" % sys.argv[0]
+    print "Usage:\n\t%s globals_folder out_path/\nout_path does not have a filename" % sys.argv[0]
     sys.exit()
 info = {}
 info["time"] = str(datetime.datetime.now().strftime('%y-%m-%d %H:%M:%S'))
+info["prev_time"] = ""
 info["station"] = station
 data = get_complete_db(sys.argv[1], source="file", info = info, logger=logger)
 dump_compressed_db(
     data,
-    OUT_PATH + sys.argv[2] + '.tar.bz2',
-    sys.argv[2],
+    sys.argv[2] + station + '_init.tar.bz2',
+    'db.json',
+    md5=True,
     logger=logger)

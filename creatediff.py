@@ -45,14 +45,16 @@ info = {}
 info["time"] = str(datetime.datetime.now().strftime('%y-%m-%d %H:%M:%S'))
 info["station"] = station
 try:
-    data2 = get_complete_db(gl_path, source="file", info=info, logger=logger)
     data1 = get_complete_db(db_path, source="json", logger=logger)    
+    info["prev_time"] = data1["info"]["time"]
+    data2 = get_complete_db(gl_path, source="file", info=info, logger=logger)
 except Exception, e:
     if logger is not None: logger.error("EXCEPTION: %s" % e)
     if logger is not None: logger.info("CREATEDIFF END".center(50, '-'))
     sys.exit(1)
 
 diff = getdiff(data2, data1)
+diff["info"]["station"] = station
 
 t = str(
     dt.strptime(data1["info"]["time"], '%y-%m-%d %H:%M:%S')
